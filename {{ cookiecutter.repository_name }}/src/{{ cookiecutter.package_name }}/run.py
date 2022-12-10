@@ -3,6 +3,7 @@ from typing import List, Optional
 
 import hydra
 import omegaconf
+from torch import nn
 import pytorch_lightning as pl
 from omegaconf import DictConfig, ListConfig
 from pytorch_lightning import Callback
@@ -55,23 +56,24 @@ def run(cfg: DictConfig) -> str:
         pylogger.info(f"Debug mode <{cfg.train.trainer.fast_dev_run=}>. Forcing debugger friendly configuration!")
         # Debuggers don't like GPUs nor multiprocessing
         cfg.train.trainer.gpus = 0
-        cfg.nn.data.num_workers.train = 0
-        cfg.nn.data.num_workers.val = 0
-        cfg.nn.data.num_workers.test = 0
+        cfg.data.datamodule.num_workers.train = 0
+        cfg.data.datamodule.num_workers.val = 0
+        cfg.data.datamodule.num_workers.test = 0
 
     cfg.core.tags = enforce_tags(cfg.core.get("tags", None))
 
     # Instantiate datamodule
-    pylogger.info(f"Instantiating <{cfg.nn.data['_target_']}>")
-    datamodule: pl.LightningDataModule = hydra.utils.instantiate(cfg.nn.data, _recursive_=False)
+    pylogger.info(f"Instantiating <{cfg.data.datamodule['_target_']}>")
+    datamodule: pl.LightningDataModule = hydra.utils.instantiate(cfg.data.datamodule, _recursive_=False)
 
     metadata: Optional[MetaData] = getattr(datamodule, "metadata", None)
     if metadata is None:
         pylogger.warning(f"No 'metadata' attribute found in datamodule <{datamodule.__class__.__name__}>")
 
     # Instantiate model
-    pylogger.info(f"Instantiating <{cfg.nn.module['_target_']}>")
-    model: pl.LightningModule = hydra.utils.instantiate(cfg.nn.module, _recursive_=False, metadata=metadata)
+    pylogger.info(f"Instantiating <{cfg.model.module['_target_']}> with <{cfg.model.arch['_target_']}>")
+    arch: nn.Module = hydra.utils.instantiate(cfg.model.arch, _recursive_=False, num_classes=len(metadata.class_vocab))
+    model: pl.LightningModule = hydra.utils.instantiate(cfg.model.module, _recursive_=False, metadata=metadata, model=arch, **cfg.optim)
 
     # Instantiate the callbacks
     template_core: NNTemplateCore = NNTemplateCore(
@@ -98,7 +100,7 @@ def run(cfg: DictConfig) -> str:
     if fast_dev_run:
         pylogger.info("Skipping testing in 'fast_dev_run' mode!")
     else:
-        if "test" in cfg.nn.data.datasets and trainer.checkpoint_callback.best_model_path is not None:
+        if "test" in cfg.data.datasets and trainer.checkpoint_callback.best_model_path is not None:
             pylogger.info("Starting testing!")
             trainer.test(datamodule=datamodule)
 

@@ -17,7 +17,7 @@ def test_load_checkpoint(run_trainings_not_dry: str, cfg_all_not_dry: DictConfig
     checkpoint_path = next(ckpts_path.glob("*"))
     assert checkpoint_path
 
-    reference: str = cfg_all_not_dry.nn.module._target_
+    reference: str = cfg_all_not_dry.model.module._target_
     module_ref, class_ref = reference.rsplit(".", maxsplit=1)
     module_class: LightningModule = getattr(import_module(module_ref), class_ref)
     assert module_class is not None
@@ -55,7 +55,7 @@ class ModuleWithCustomCheckpoint(MyLightningModule):
 
 def test_on_save_checkpoint_hook(cfg_all_not_dry: DictConfig) -> None:
     cfg = OmegaConf.create(cfg_all_not_dry)
-    cfg.nn.module._target_ = "tests.test_checkpoint.ModuleWithCustomCheckpoint"
+    cfg.model.module._target_ = "tests.test_checkpoint.ModuleWithCustomCheckpoint"
     output_path = Path(run(cfg))
 
     checkpoint = load_checkpoint(output_path)

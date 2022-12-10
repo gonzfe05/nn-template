@@ -1,0 +1,6 @@
+module:
+  _target_: {{ cookiecutter.package_name }}.pl_modules.pl_module.MyLightningModule
+
+
+arch:
+  _target_: {{ cookiecutter.package_name }}.modules.module.CNN

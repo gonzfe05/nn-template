@@ -18,7 +18,7 @@ pylogger = logging.getLogger(__name__)
 
 
 class MetaData:
-    def __init__(self, class_vocab: Mapping[str, int]):
+    def __init__(self, class_vocab: Mapping[str, int], task: str, threshold: float = 0.5):
         """The data information the Lightning Module will be provided with.
 
         This is a "bridge" between the Lightning DataModule and the Lightning Module.
@@ -42,6 +42,9 @@ class MetaData:
         """
         # example
         self.class_vocab: Mapping[str, int] = class_vocab
+        self.task = task
+        self.threshold = threshold
+        
 
     def save(self, dst_path: Path) -> None:
         """Serialize the MetaData attributes into the zipped checkpoint in dst_path.
@@ -55,6 +58,7 @@ class MetaData:
         (dst_path / "class_vocab.tsv").write_text(
             "\n".join(f"{key}\t{value}" for key, value in self.class_vocab.items())
         )
+        (dst_path / "task.txt").write_text(self.task)
 
     @staticmethod
     def load(src_path: Path) -> "MetaData":
@@ -75,9 +79,10 @@ class MetaData:
         for line in lines:
             key, value = line.strip().split("\t")
             class_vocab[key] = value
+        task = (src_path / "task.txt").read_text(encoding="utf-8").splitlines()[0]
 
         return MetaData(
-            class_vocab=class_vocab,
+            class_vocab=class_vocab, task=task
         )
 
 
@@ -104,6 +109,7 @@ class MyDataModule(pl.LightningDataModule):
         gpus: Optional[Union[List[int], str, int]],
         # example
         val_percentage: float,
+        task: str
     ):
         super().__init__()
         self.datasets = datasets
@@ -118,6 +124,7 @@ class MyDataModule(pl.LightningDataModule):
 
         # example
         self.val_percentage: float = val_percentage
+        self.task: str = task
 
     @cached_property
     def metadata(self) -> MetaData:
@@ -132,7 +139,7 @@ class MyDataModule(pl.LightningDataModule):
         if self.train_dataset is None:
             self.setup(stage="fit")
 
-        return MetaData(class_vocab=self.train_dataset.dataset.class_vocab)
+        return MetaData(class_vocab=self.train_dataset.dataset.class_vocab, task=self.task)
 
     def prepare_data(self) -> None:
         # download only

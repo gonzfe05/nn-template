@@ -1,0 +1,31 @@
+datamodule:
+  _target_: {{ cookiecutter.package_name }}.data.datamodule.MyDataModule
+
+  datasets: ${data.datasets}
+
+  gpus: ${train.trainer.gpus}
+
+  num_workers:
+    train: 8
+    val: 4
+    test: 4
+
+  batch_size:
+    train: 32
+    val: 16
+    test: 16
+
+  # example
+  val_percentage: 0.1
+  task: multiclass
+  # threshold: 0.5
+
+datasets:
+  train:
+    _target_: {{ cookiecutter.package_name }}.data.dataset.MyDataset
+
+#    val:
+#      - _target_: {{ cookiecutter.package_name }}.data.dataset.MyDataset
+
+  test:
+    - _target_: {{ cookiecutter.package_name }}.data.dataset.MyDataset

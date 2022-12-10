@@ -5,6 +5,7 @@ import hydra
 import omegaconf
 import pytorch_lightning as pl
 import torch
+from torch import nn
 import torch.nn.functional as F
 import torchmetrics
 from torch.optim import Optimizer
@@ -21,7 +22,7 @@ pylogger = logging.getLogger(__name__)
 class MyLightningModule(pl.LightningModule):
     logger: NNLogger
 
-    def __init__(self, metadata: Optional[MetaData] = None, *args, **kwargs) -> None:
+    def __init__(self, model: nn.Module, metadata: Optional[MetaData] = None, *args, **kwargs) -> None:
         super().__init__()
 
         # Populate self.hparams with args and kwargs automagically!
@@ -32,12 +33,20 @@ class MyLightningModule(pl.LightningModule):
         self.metadata = metadata
 
         # example
-        metric = torchmetrics.Accuracy()
+        assert self.metadata.task
+        if self.metadata.task == "binary":
+            metric = torchmetrics.Accuracy(self.metadata.task, threshold=self.metadata.threshold)
+        elif self.metadata.task == "multiclass":
+            num_classes = len(self.metadata.class_vocab.keys())
+            metric = torchmetrics.Accuracy(self.metadata.task, num_classes=num_classes)
+        elif self.metadata.task == "multilabel":
+            metric = torchmetrics.Accuracy(self.metadata.task, threshold=self.metadata.threshold)
+        else:
+            raise ValueError(f"Unrecognized task value: '{self.metadata.task}'")
         self.train_accuracy = metric.clone()
         self.val_accuracy = metric.clone()
         self.test_accuracy = metric.clone()
-
-        self.model = CNN(num_classes=len(metadata.class_vocab))
+        self.model = model
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Method for the forward pass.
@@ -151,10 +160,14 @@ def main(cfg: omegaconf.DictConfig) -> None:
     Args:
         cfg: the hydra configuration
     """
+    metadata=MetaData({'0': 0, '1': 1}, cfg.data.datamodule.task)
+    model = hydra.utils.instantiate(cfg.model.arch, _recursive_=False, num_classes=len(metadata.class_vocab))
     _: pl.LightningModule = hydra.utils.instantiate(
-        cfg.model,
-        optim=cfg.optim,
+        cfg.model.module,
         _recursive_=False,
+        metadata=metadata,
+        model=model,
+        **cfg.optim
     )
 
 

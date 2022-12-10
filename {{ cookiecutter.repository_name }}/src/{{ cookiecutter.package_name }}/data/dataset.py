@@ -17,7 +17,7 @@ class MyDataset(Dataset):
             kwargs["path"],
             train=split == "train",
             download=True,
-            transform=kwargs["transform"],
+            transform=kwargs.get("transform"),
         )
 
     @property
@@ -43,8 +43,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
     Args:
         cfg: the hydra configuration
     """
-    _: Dataset = hydra.utils.instantiate(cfg.nn.data.datasets.train, split="train", _recursive_=False)
-
+    _: Dataset = hydra.utils.instantiate(cfg.data.datasets.train, split="train", path=PROJECT_ROOT / "data", _recursive_=False)
 
 if __name__ == "__main__":
     main()

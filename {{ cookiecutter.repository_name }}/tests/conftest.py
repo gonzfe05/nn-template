@@ -51,6 +51,9 @@ def cfg(tmp_path_factory: TempPathFactory) -> DictConfig:
 def cfg_simple_train(cfg: DictConfig) -> DictConfig:
     cfg = OmegaConf.create(cfg)
 
+    # Make sure fixture will fail if we try to write a non-existent field
+    OmegaConf.set_struct(cfg, True)
+
     # Add test tag
     cfg.core.tags = ["testing"]
 
@@ -65,15 +68,15 @@ def cfg_simple_train(cfg: DictConfig) -> DictConfig:
     cfg.train.logging.upload.run_files = False
 
     # Disable multiple workers in test training
-    cfg.nn.data.num_workers.train = 0
-    cfg.nn.data.num_workers.val = 0
-    cfg.nn.data.num_workers.test = 0
+    cfg.data.datamodule.num_workers.train = 0
+    cfg.data.datamodule.num_workers.val = 0
+    cfg.data.datamodule.num_workers.test = 0
 
     # Minimize the amount of work in test training
     cfg.train.trainer.max_steps = TRAIN_MAX_NSTEPS
     cfg.train.trainer.val_check_interval = TRAIN_MAX_NSTEPS
 
-    # Ensure the resuming is disabled
+    # Ensure the resuming is disabled by safely writing the values
     with open_dict(config=cfg):
         cfg.train.restore = {}
         cfg.train.restore.ckpt_or_run_path = None
