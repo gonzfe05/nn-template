@@ -63,6 +63,14 @@ class Query:
 
 SETUP_COMMANDS: List[Query] = [
     Query(
+        id="make_symlinks",
+        interactive=False,
+        default=True,
+        prompt="Making symlinks...",
+        command="ln -s data notebooks/data",
+        autorun=True,
+    ),
+    Query(
         id="git_init",
         interactive=True,
         default=True,
