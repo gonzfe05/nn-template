@@ -117,6 +117,9 @@ SETUP_COMMANDS: List[Query] = [
         prompt="Installing poetry...",
         command="conda run -n {{ cookiecutter.conda_env_name }} curl -sSL https://install.python-poetry.org | python3 -",
         autorun=True,
+        dependencies=[
+            Dependency(id="conda_env", expected=True),
+        ],
     ),
     Query(
         id="prepare_lib",
@@ -125,6 +128,9 @@ SETUP_COMMANDS: List[Query] = [
         prompt="Preparing lib...",
         command="conda run -n {{ cookiecutter.conda_env_name }} poetry install",
         autorun=True,
+        dependencies=[
+            Dependency(id="install_poetry", expected=True),
+        ],
     ),
     Query(
         id="precommit_install",
@@ -136,6 +142,7 @@ SETUP_COMMANDS: List[Query] = [
         dependencies=[
             Dependency(id="git_init", expected=True),
             Dependency(id="conda_env", expected=True),
+            Dependency(id="prepare_lib", expected=True),
         ],
     ),
     Query(
@@ -149,6 +156,7 @@ SETUP_COMMANDS: List[Query] = [
         dependencies=[
             Dependency(id="conda_env", expected=True),
             Dependency(id="git_init", expected=True),
+            Dependency(id="prepare_lib", expected=True),
         ],
     ),
     Query(
@@ -174,6 +182,7 @@ SETUP_COMMANDS: List[Query] = [
         autorun=False,
         dependencies=[
             Dependency(id="conda_env", expected=True),
+            Dependency(id="prepare_lib", expected=True),
         ],
     ),
 ]
