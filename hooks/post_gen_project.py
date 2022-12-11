@@ -67,7 +67,7 @@ SETUP_COMMANDS: List[Query] = [
         interactive=False,
         default=True,
         prompt="Making symlinks...",
-        command="ln -s data notebooks/data",
+        command="ln -s ../data notebooks/data",
         autorun=True,
     ),
     Query(
