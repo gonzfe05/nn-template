@@ -11,5 +11,5 @@
     "conda_env_name": "{{ cookiecutter.package_name }}",
     "python_version": "3.9",
     "__version": "0.1.0-beta0",
-    "_copy_without_render": [".github/workflows/test.yml"]
+    "_copy_without_render": [".github/workflows/test_suite.yml", ".github/workflows/publish.yml"]
 }
