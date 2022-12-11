@@ -3,10 +3,11 @@ from typing import List, Optional
 
 import hydra
 import omegaconf
-from torch import nn
+
 import pytorch_lightning as pl
 from omegaconf import DictConfig, ListConfig
 from pytorch_lightning import Callback
+from torch import nn
 
 from nn_core.callbacks import NNTemplateCore
 from nn_core.common import PROJECT_ROOT
@@ -73,7 +74,8 @@ def run(cfg: DictConfig) -> str:
     # Instantiate model
     pylogger.info(f"Instantiating <{cfg.model.module['_target_']}> with <{cfg.model.arch['_target_']}>")
     arch: nn.Module = hydra.utils.instantiate(cfg.model.arch, _recursive_=False, num_classes=len(metadata.class_vocab))
-    model: pl.LightningModule = hydra.utils.instantiate(cfg.model.module, _recursive_=False, metadata=metadata, model=arch, **cfg.optim)
+    model: pl.LightningModule = hydra.utils.instantiate(
+        cfg.model.module, _recursive_=False, metadata=metadata, model=arch, **cfg.optim)
 
     # Instantiate the callbacks
     template_core: NNTemplateCore = NNTemplateCore(

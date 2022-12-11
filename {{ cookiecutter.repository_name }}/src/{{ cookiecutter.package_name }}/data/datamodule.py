@@ -39,12 +39,14 @@ class MetaData:
 
         Args:
             class_vocab: association between class names and their indices
+            task: dataset task which will be used in metric initialization.
+            threshold: classification threshold if applicable. Default 0.5.
         """
         # example
         self.class_vocab: Mapping[str, int] = class_vocab
         self.task = task
         self.threshold = threshold
-        
+
 
     def save(self, dst_path: Path) -> None:
         """Serialize the MetaData attributes into the zipped checkpoint in dst_path.
@@ -81,9 +83,7 @@ class MetaData:
             class_vocab[key] = value
         task = (src_path / "task.txt").read_text(encoding="utf-8").splitlines()[0]
 
-        return MetaData(
-            class_vocab=class_vocab, task=task
-        )
+        return MetaData(class_vocab=class_vocab, task=task)
 
 
 def collate_fn(samples: List, split: Split, metadata: MetaData):
@@ -109,7 +109,7 @@ class MyDataModule(pl.LightningDataModule):
         gpus: Optional[Union[List[int], str, int]],
         # example
         val_percentage: float,
-        task: str
+        task: str,
     ):
         super().__init__()
         self.datasets = datasets

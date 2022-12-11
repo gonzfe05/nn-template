@@ -43,7 +43,9 @@ def main(cfg: omegaconf.DictConfig) -> None:
     Args:
         cfg: the hydra configuration
     """
-    _: Dataset = hydra.utils.instantiate(cfg.data.datasets.train, split="train", path=PROJECT_ROOT / "data", _recursive_=False)
+    _: Dataset = hydra.utils.instantiate(
+        cfg.data.datasets.train, split="train", path=PROJECT_ROOT / "data", _recursive_=False
+    )
 
 if __name__ == "__main__":
     main()

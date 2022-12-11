@@ -5,16 +5,16 @@ import hydra
 import omegaconf
 import pytorch_lightning as pl
 import torch
-from torch import nn
+
 import torch.nn.functional as F
 import torchmetrics
+from torch import nn
 from torch.optim import Optimizer
 
 from nn_core.common import PROJECT_ROOT
 from nn_core.model_logging import NNLogger
 
 from {{ cookiecutter.package_name }}.data.datamodule import MetaData
-from {{ cookiecutter.package_name }}.modules.module import CNN
 
 pylogger = logging.getLogger(__name__)
 
