@@ -22,6 +22,8 @@ dvc = "2.37.0"
 python-dotenv = "*"
 matplotlib = "3.6.2"
 stqdm = "*"
+torch = "^1.13"
+torchvision = ">0.8"
 # hydra-joblib-launcher
 
 [tool.poetry.group.docs.dependencies]
