@@ -71,6 +71,36 @@ SETUP_COMMANDS: List[Query] = [
         autorun=True,
     ),
     Query(
+        id="conda_env",
+        interactive=True,
+        default=True,
+        prompt="Creating conda environment...",
+        command="conda env create -f env.yaml",
+        autorun=True,
+    ),
+    Query(
+        id="install_poetry",
+        interactive=False,
+        default=True,
+        prompt="Installing poetry...",
+        command="conda run -n {{ cookiecutter.conda_env_name }} curl -sSL https://install.python-poetry.org | python3 -",
+        autorun=True,
+        dependencies=[
+            Dependency(id="conda_env", expected=True),
+        ],
+    ),
+    Query(
+        id="prepare_lib",
+        interactive=False,
+        default=True,
+        prompt="Preparing lib...",
+        command="conda run -n {{ cookiecutter.conda_env_name }} poetry install",
+        autorun=True,
+        dependencies=[
+            Dependency(id="install_poetry", expected=True),
+        ],
+    ),
+    Query(
         id="git_init",
         interactive=True,
         default=True,
@@ -100,36 +130,6 @@ SETUP_COMMANDS: List[Query] = [
         autorun=True,
         dependencies=[
             Dependency(id="git_remote", expected=True),
-        ],
-    ),
-    Query(
-        id="conda_env",
-        interactive=True,
-        default=True,
-        prompt="Creating conda environment...",
-        command="conda env create -f env.yaml",
-        autorun=True,
-    ),
-    Query(
-        id="install_poetry",
-        interactive=False,
-        default=True,
-        prompt="Installing poetry...",
-        command="conda run -n {{ cookiecutter.conda_env_name }} curl -sSL https://install.python-poetry.org | python3 -",
-        autorun=True,
-        dependencies=[
-            Dependency(id="conda_env", expected=True),
-        ],
-    ),
-    Query(
-        id="prepare_lib",
-        interactive=False,
-        default=True,
-        prompt="Preparing lib...",
-        command="conda run -n {{ cookiecutter.conda_env_name }} poetry install",
-        autorun=True,
-        dependencies=[
-            Dependency(id="install_poetry", expected=True),
         ],
     ),
     Query(
