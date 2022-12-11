@@ -1,3 +1,49 @@
+[tool.poetry]
+name = {{ cookiecutter.package_name }}
+version = "0.1.0-beta0"
+description = ""
+license = "MIT"
+authors = ["{{ cookiecutter.author }} <{{ cookiecutter.author_email }}>"]
+readme = "README.md"
+homepage = {{ cookiecutter.github_pages_url }}
+documentation = {{ cookiecutter.github_pages_url }}
+repository = {{ cookiecutter.repository_url }}
+packages = [{include = {{ cookiecutter.package_name }}, from="src"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+nn-template-core = "^0.1.0"
+pytorch-lightning = "^1.5.8"
+hydra-core = "^1.3.0"
+wandb = "^0.13.6"
+streamlit = "*"
+rich = "*"
+dvc = "2.37.0"
+python-dotenv = "*"
+matplotlib = "3.6.2"
+stqdm = "*"
+# hydra-joblib-launcher
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "*"
+mkdocs-material = "*"
+mike = "*"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+flake8 = "*"
+isort = "*"
+pre-commit = "*"
+bandit = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.pytest.ini_options]
 minversion = "6.2"
 addopts = "-ra"
@@ -24,7 +70,7 @@ profile = 'black'
 line_length = 120
 known_third_party = ["numpy", "pytest", "wandb", "torch"]
 known_first_party = ["nn_core"]
-known_local_folder = "{{ cookiecutter.package_name }}"
+known_local_folder = {{ cookiecutter.package_name }}
 
 [tool.pydocstyle]
 convention = 'google'
@@ -34,10 +80,3 @@ add-ignore = ['D100', 'D101', 'D102', 'D103', 'D104', 'D105', 'D106', 'D107']
 [tool.bandit]
 skips = ["B101"]
 
-[tool.setuptools_scm]
-write_to = "src/{{ cookiecutter.package_name }}/_version.py"
-write_to_template = '__version__ = "{version}"'
-
-[build-system]
-requires = ["setuptools==59.5", "wheel", "setuptools_scm[toml]>=6.3.1"]
-build-backend = "setuptools.build_meta"

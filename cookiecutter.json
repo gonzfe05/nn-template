@@ -6,8 +6,9 @@
     "project_description": "A new awesome project.",
     "repository_name": "{{ cookiecutter.project_name.strip().lower().replace(' ', '-') }}",
     "package_name": "{{ cookiecutter.project_name.strip().lower().replace(' ', '-').replace('-', '_') }}",
-    "repository_url": "https://github.com/{{ cookiecutter.github_user }}/{{ cookiecutter.project_name.strip().lower().replace(' ', '-') }}",
-    "conda_env_name": "{{ cookiecutter.project_name.strip().lower().replace(' ', '-') }}",
+    "repository_url": "https://github.com/{{ cookiecutter.github_user }}/{{ cookiecutter.repository_name }}",
+    "github_pages_url": "https://{{ cookiecutter.github_user }}.github.io/{{ cookiecutter.repository_name }}/",
+    "conda_env_name": "{{ cookiecutter.package_name }}",
     "python_version": "3.9",
     "__version": "0.2.2"
 }

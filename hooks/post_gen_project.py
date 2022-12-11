@@ -147,6 +147,15 @@ SETUP_COMMANDS: List[Query] = [
             Dependency(id="git_remote", expected=True),
         ],
     ),
+
+    Query(
+        id="install_poetry",
+        interactive=False,
+        default=True,
+        prompt="Installing poetry...",
+        command="conda run -n {{ cookiecutter.conda_env_name }} curl -sSL https://install.python-poetry.org | python3 -",
+        autorun=True,
+    ),
     Query(
         id="conda_activate",
         interactive=False,
