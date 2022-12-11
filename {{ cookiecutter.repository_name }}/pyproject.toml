@@ -1,14 +1,14 @@
 [tool.poetry]
-name = {{ cookiecutter.package_name }}
+name = "{{ cookiecutter.package_name }}"
 version = "0.1.0-beta0"
 description = ""
 license = "MIT"
 authors = ["{{ cookiecutter.author }} <{{ cookiecutter.author_email }}>"]
 readme = "README.md"
-homepage = {{ cookiecutter.github_pages_url }}
-documentation = {{ cookiecutter.github_pages_url }}
-repository = {{ cookiecutter.repository_url }}
-packages = [{include = {{ cookiecutter.package_name }}, from="src"}]
+homepage = "{{ cookiecutter.github_pages_url }}"
+documentation = "{{ cookiecutter.github_pages_url }}"
+repository = "{{ cookiecutter.repository_url }}"
+packages = [{include = "{{ cookiecutter.package_name }}", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -70,7 +70,7 @@ profile = 'black'
 line_length = 120
 known_third_party = ["numpy", "pytest", "wandb", "torch"]
 known_first_party = ["nn_core"]
-known_local_folder = {{ cookiecutter.package_name }}
+known_local_folder = "{{ cookiecutter.package_name }}"
 
 [tool.pydocstyle]
 convention = 'google'
