@@ -10,5 +10,6 @@
     "github_pages_url": "https://{{ cookiecutter.github_user }}.github.io/{{ cookiecutter.repository_name }}/",
     "conda_env_name": "{{ cookiecutter.package_name }}",
     "python_version": "3.9",
-    "__version": "0.2.2"
+    "__version": "0.1.0-beta0",
+    "_copy_without_render": [".github/workflows/test.yml"]
 }
