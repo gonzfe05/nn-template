@@ -1,8 +1,12 @@
+import json
+import os
 import random
 from collections import defaultdict
+from glob import glob
 
 import hydra
 import omegaconf
+import torch
 from torch.utils.data import Dataset, get_worker_info
 from torchvision.datasets import FashionMNIST
 from tqdm import tqdm
@@ -98,6 +102,33 @@ class MyContrastativeDataset(Dataset):
     def __repr__(self) -> str:
         return f"MyContrastativeDataset({self.split=}, {self.size=}, seed={self.seed})"
 
+
+class MyEmbeddingsDataset(Dataset):
+    def __init__(self, split: Split, **kwargs):
+        super().__init__()
+        self.split: Split = split
+        self.root = os.path.join(kwargs["path"], kwargs["run"])
+        self.embeddings = glob(os.path.join(self.root, split, "data/embeddings/*.pt"))
+        self.labels = glob(os.path.join(self.root, split, "data/labels/*.pt"))
+        with open(os.path.join(self.root, split, "metadata", "metadata.json")) as f:
+            self.metadata = json.load(f)
+
+    @property
+    def class_vocab(self):
+        return self.metadata["class_to_idx"]
+
+    def __len__(self) -> int:
+        # example
+        return len(self.embeddings)
+
+    def __getitem__(self, index: int):
+        # example
+        emb = torch.load(self.embeddings[index])
+        label = torch.load(self.labels[index])
+        return (emb, int(label.detach()))
+
+    def __repr__(self) -> str:
+        return f"MyDataset({self.split=}, n_instances={len(self)})"
 
 @hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
 def main(cfg: omegaconf.DictConfig) -> None:

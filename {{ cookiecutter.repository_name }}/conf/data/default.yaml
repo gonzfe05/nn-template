@@ -23,9 +23,13 @@ datamodule:
 datasets:
   train:
     _target_: {{ cookiecutter.package_name }}.data.dataset.MyDataset
+    size: null # dataset size to generate in contrastative dataset
+    run: null # wandb run for embeddings dataset
 
 #    val:
 #      - _target_: {{ cookiecutter.package_name }}.data.dataset.MyDataset
 
   test:
     - _target_: {{ cookiecutter.package_name }}.data.dataset.MyDataset
+      size: null
+      run: null

@@ -30,6 +30,18 @@ class CNN(nn.Module):
         return output
 
 
+class FFN(nn.Module):
+    def __init__(self, num_classes: int):
+        super(FFN, self).__init__()
+        self.model = nn.Sequential(
+            nn.Linear(2, num_classes)
+        )
+
+    def forward(self, x):
+        output = self.model(x)
+        return output
+
+
 class SiameseNetwork(nn.Module):
     def __init__(self, num_classes: int):
         super(SiameseNetwork, self).__init__()
